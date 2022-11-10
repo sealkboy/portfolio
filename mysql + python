@@ -1,0 +1,636 @@
+!pip install mysql-connector-python
+import mysql.connector
+
+# 1) Realizar un programa que muestre la lista de datos que hay en todas las tablas del servidor de bases de datos, en el que vaya mostrando cada nombre de la base de datos, dentro de cada base de datos, cada nombre de las tablas y debajo de cada nombre de las tablas sus datos.
+
+mydb = mysql.connector.connect(
+host="localhost",
+user="root",
+passwd="---",
+)
+mycursor = mydb.cursor()
+qr= "show databases"
+mycursor.execute(qr)
+print (">>>NOMBRES DE TODAS LAS BASES DE DATOS: ")
+print (mycursor.fetchall())
+print()
+mydb = mysql.connector.connect(
+host="localhost",
+user="root",
+passwd="---",
+database="tienda"
+)
+mycursor = mydb.cursor()
+qr= "show full tables"
+mycursor.execute(qr)
+print (">>>TABLAS DE LA BASE DE DATOS 'tienda': ")
+print (mycursor.fetchall())
+print()
+qr1="select * from fabricante"
+mycursor.execute(qr1)
+print (" - VALORES DE LA TABLA 'fabricante': ")
+level=3
+print (" "*level, mycursor.fetchall())
+print()
+qr2="select * from producto"
+mycursor.execute(qr1)
+print (" - VALORES DE LA TABLA 'producto': ")
+level=3
+print (" "*level, mycursor.fetchall())
+print()
+mydb = mysql.connector.connect(
+host="localhost",
+user="root",
+passwd="---",
+database="ventas"
+)
+mycursor = mydb.cursor()
+qr= "show full tables"
+mycursor.execute(qr)
+print (">>>TABLAS DE LA BASE DE DATOS 'ventas': ")
+print (mycursor.fetchall())
+print()
+qr1="select * from cliente"
+mycursor.execute(qr1)
+print (" - VALORES DE LA TABLA 'cliente': ")
+level=3
+print (" "*level, mycursor.fetchall())
+print()
+qr2="select * from comercial"
+mycursor.execute(qr1)
+print (" - VALORES DE LA TABLA 'comercial': ")
+level=3
+print (" "*level, mycursor.fetchall())
+print()
+qr3="select * from pedido"
+mycursor.execute(qr1)
+print (" - VALORES DE LA TABLA 'pedido': ")
+level=3
+print (" "*level, mycursor.fetchall())
+print()
+
+# 2) Realizar un CRUD, sobre la base de datos del ejercicio propuesto para cada alumno.
+
+mydb = mysql.connector.connect(
+host="localhost",
+user="root",
+passwd="---",
+database="ventas"
+)
+cursor=mydb.cursor()
+print ("¡ATENCIÓN! Debe teclear alguna de la siguientes iniciales: ") 
+print ("- C para Create")
+print ("- R para Read")
+print ("- U para Update")
+print ("- D para Delete")
+CRUD = input ("¿Qué desea hacer? ")
+if CRUD == "C": 
+    tabla = input("¿A qué tabla quiere añadir datos? (teclee: cliente / comercial / pedido) ")
+    if tabla=="cliente": 
+        num_cliente = int(input(" >>>¿Cuántos clientes desea añadir? "))
+        for x in range (num_cliente): 
+            cliente_data_lst=[] 
+            qr_cliente= "insert into cliente (nombre, apellido1, apellido2, ciudad, categoría) values (%s, %s, %s, %s, %s)" 
+            print() 
+            print("DATOS DEL CLIENTE Nº" + str(x+1) + ": ") 
+            cliente_data1=input("Ingrese 'nombre': ") 
+            cliente_data2=input("Ingrese 'apellido1': ") 
+            cliente_data3=input("Ingrese 'apellido2': ") 
+            cliente_data4=input("Ingrese 'ciudad': ") 
+            cliente_data5=int(input("Ingrese 'categoría': ")) 
+            cliente_data_lst.append(cliente_data1) 
+            cliente_data_lst.append(cliente_data2) 
+            cliente_data_lst.append(cliente_data3) 
+            cliente_data_lst.append(cliente_data4) 
+            cliente_data_lst.append(cliente_data5) 
+            cursor.execute(qr_cliente, cliente_data_lst)
+            mydb.commit() 
+    if tabla =="comercial":
+        num_comercial = int(input(" >>>¿Cuántos comerciales desea añadir? "))
+        for y in range(num_comercial):
+            comercial_data_lst = []
+            qr_comercial = "insert into comercial (nombre, apellido1, apellido2, comisión) values (%s, %s, %s, %s)"
+            print()
+            print("DATOS DEL COMERCIAL Nº" + str(y + 1) + ": ")
+            comercial_data1 = input("Ingrese 'nombre': ")
+            comercial_data2 = input("Ingrese 'apellido1': ")
+            comercial_data3 = input("Ingrese 'apellido2': ")
+            comercial_data4 = float(input("Ingrese 'comisión': "))
+            comercial_data_lst.append(comercial_data1)
+            comercial_data_lst.append(comercial_data2)
+            comercial_data_lst.append(comercial_data3)
+            comercial_data_lst.append(comercial_data4)
+            cursor.execute(qr_comercial, comercial_data_lst)
+            mydb.commit()
+    if tabla == "pedido":
+        num_pedido = int(input(" >>>¿Cuántos pedidos desea añadir? "))
+        for z in range(num_pedido):
+            pedido_data_lst = []
+            qr_pedido = "insert into cliente (total, fecha, id_cliente, id_comercial) values (%s, %s, %s, %s)"
+            print()
+            print("DATOS DEL PEDIDO Nº" + str(x + 1) + ": ")
+            pedido_data1 = input("Ingrese 'total': ")
+            pedido_data2 = input("Ingrese 'fecha' (xxxx, x, xx): ")
+            pedido_data3 = input("Ingrese 'id_cliente': ")
+            pedido_data4 = input("Ingrese 'id_comercial': ")
+            pedido_data_lst.append(pedido_data1)
+            pedido_data_lst.append(pedido_data2)
+            pedido_data_lst.append(pedido_data3)
+            pedido_data_lst.append(pedido_data4)
+            cursor.execute(qr_pedido, pedido_data_lst)
+            mydb.commit()
+if CRUD=="R":
+    tabla = input(" >>>¿De qué tabla quiere leer los datos? (teclee: cliente / comercial / pedido) ")
+    if tabla=="cliente":
+        qr1 = "select * from cliente"
+        cursor.execute(qr1)
+        print()
+        print(" - VALORES DE LA TABLA 'cliente': ")
+        level = 3
+        print(" " * level, cursor.fetchall())
+        print()
+    if tabla=="comercial":
+        qr2 = "select * from comercial"
+        cursor.execute(qr2)
+        print()
+        print(" - VALORES DE LA TABLA 'comercial': ")
+        level = 3
+        print(" " * level, cursor.fetchall())
+        print()
+    if tabla=="pedido":
+        qr3 = "select * from pedido"
+        cursor.execute(qr3)
+        print()
+        print(" - VALORES DE LA TABLA 'pedido': ")
+        level = 3
+        print(" " * level, cursor.fetchall())
+        print()
+if CRUD=="U":
+    tabla = input("¿De qué tabla quiere actualizar los datos? (teclee: cliente / comercial / pedido) ")
+    if tabla=="cliente":
+            print()
+            print()
+            print("DATOS DE LA TABLA 'cliente' (id, nombre, apellido1, apeliido2, ciudad, categoría): ")
+            print()
+            qr_show_cliente = "select * from cliente"
+            cursor.execute(qr_show_cliente)
+            level=3
+            print(" " * level, cursor.fetchall())
+            columna_cliente = input("¿De qué columna quiere actualizar los datos? (teclee: nombre / apellido1 / apellido2 / ciudad / categoría) ")
+            if columna_cliente== "nombre":
+                cliente_data_lst_nom_update=[] 
+                qr_cliente_nombre = "update cliente set nombre= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese el nuevo 'nombre': ") 
+                cliente_data1=input("Ingrese 'id' del cliente a modificar: ") 
+                cliente_data_lst_nom_update.append(cliente_data0) 
+                cliente_data_lst_nom_update.append(cliente_data1) 
+                cursor.execute(qr_cliente_nombre, cliente_data_lst_nom_update)
+                mydb.commit()
+            if columna_cliente== "apellido1":
+                cliente_data_lst_ap1_update=[] 
+                qr_cliente_ap1 = "update cliente set apellido1= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese el nuevo 'apellido1': ") 
+                cliente_data1=input("Ingrese 'id' del cliente a modificar: ") 
+                cliente_data_lst_ap1_update.append(cliente_data0) 
+                cliente_data_lst_ap1_update.append(cliente_data1) 
+                cursor.execute(qr_cliente_ap1, cliente_data_lst_ap1_update)
+                mydb.commit()
+            if columna_cliente== "apellido2":
+                cliente_data_lst_ap2_update=[] 
+                qr_cliente_ap2 = "update cliente set apellido2= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese el nuevo 'apellido2': ") 
+                cliente_data1=input("Ingrese 'id' del cliente a modificar: ") 
+                cliente_data_lst_ap2_update.append(cliente_data0) 
+                cliente_data_lst_ap2_update.append(cliente_data1) 
+                cursor.execute(qr_cliente_ap2, cliente_data_lst_ap2_update)
+                mydb.commit()
+            if columna_cliente== "ciudad":
+                cliente_data_lst_ciudad_update=[] 
+                qr_cliente_ciudad = "update cliente set ciudad= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese la nueva 'ciudad': ") 
+                cliente_data1=input("Ingrese 'id' del cliente a modificar: ") 
+                cliente_data_lst_ciudad_update.append(cliente_data0) 
+                cliente_data_lst_ciudad_update.append(cliente_data1) 
+                cursor.execute(qr_cliente_ciudad, cliente_data_lst_ciudad_update)
+                mydb.commit()
+            if columna_cliente == "categoría":
+                cliente_data_lst_categoria_update=[] 
+                qr_cliente_categoria = "update cliente set categoria= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese la nueva 'categoria': ") 
+                cliente_data1=input("Ingrese 'id' del cliente a modificar: ") 
+                cliente_data_lst_categoria_update.append(cliente_data0) 
+                cliente_data_lst_categoria_update.append(cliente_data1) 
+                cursor.execute(qr_cliente_categoria, cliente_data_lst_categoria_update)
+                mydb.commit()
+    if tabla=="comercial":
+            print()
+            print()
+            print("DATOS DE LA TABLA 'comercial' (id, nombre, apellido1, apeliido2, comisión): ")
+            print()
+            qr_show_comercial = "select * from comercial"
+            cursor.execute(qr_show_comercial)
+            level=3
+            print(" " * level, cursor.fetchall())
+            columna_comercial = input("¿De qué columna quiere actualizar los datos? (teclee: nombre / apellido1 / apellido2 / comisión) ")
+            if columna_comercial== "nombre":
+                comercial_data_lst_nom_update=[] 
+                qr_comercial_nombre = "update comercial set nombre= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese el nuevo 'nombre': ") 
+                comercial_data1=input("Ingrese 'id' del comercial a modificar: ") 
+                comercial_data_lst_nom_update.append(comercial_data0) 
+                comercial_data_lst_nom_update.append(comercial_data1) 
+                cursor.execute(qr_comercial_nombre, comercial_data_lst_nom_update)
+                mydb.commit()
+            if columna_comercial== "apellido1":
+                comercial_data_lst_ap1_update=[] 
+                qr_comercial_ap1 = "update comercial set apellido1= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese el nuevo 'apellido1': ") 
+                comercial_data1=input("Ingrese 'id' del comercial a modificar: ") 
+                comercial_data_lst_ap1_update.append(comercial_data0) 
+                comercial_data_lst_ap1_update.append(comercial_data1) 
+                cursor.execute(qr_comercial_ap1, comercial_data_lst_ap1_update)
+                mydb.commit()
+            if columna_comercial== "apellido2":
+                comercial_data_lst_ap2_update=[] 
+                qr_comercial_ap2 = "update comercial set apellido2= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese el nuevo 'apellido2': ") 
+                comercial_data1=input("Ingrese 'id' del comercial a modificar: ") 
+                comercial_data_lst_ap2_update.append(comercial_data0) 
+                comercial_data_lst_ap2_update.append(comecial_data1) 
+                cursor.execute(qr_comercial_ap2, comercial_data_lst_ap2_update)
+                mydb.commit()
+            if columna_comercial== "comisión":
+                comercial_data_lst_ciudad_update=[] 
+                qr_comercial_ciudad = "update comercial set ciudad= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese la nueva 'ciudad': ") 
+                comercial_data1=input("Ingrese 'id' del comercial a modificar: ") 
+                comercial_data_lst_ciudad_update.append(comercial_data0) 
+                comercial_data_lst_ciudad_update.append(comercial_data1) 
+                cursor.execute(qr_comercial_ciudad, comercial_data_lst_ciudad_update)
+                mydb.commit()
+    if tabla=="pedido":
+            print()
+            print()
+            print("DATOS DE LA TABLA 'pedido' (id, total, fecha, id_cliente, id_comercial): ")
+            print()
+            qr_show_pedido = "select * from pedido"
+            cursor.execute(qr_show_pedido)
+            level=3
+            print(" " * level, cursor.fetchall())
+            columna_pedido = input("¿De qué columna quiere actualizar los datos? (teclee: total / fecha / id_cliente / id_comercial) ")
+            if columna_pedido== "total":
+                pedido_data_lst_total_update=[] 
+                qr_pedido_total = "update pedido set total= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese el nuevo 'total': ") 
+                pedido_data1=input("Ingrese 'id' del pedido a modificar: ") 
+                pedido_data_lst_total_update.append(pedido_data0) 
+                pedido_data_lst_total_update.append(pedido_data1) 
+                cursor.execute(qr_pedido_total, pedido_data_lst_total_update)
+                mydb.commit()
+            if columna_pedido== "fecha":
+                pedido_data_lst_fecha_update=[] 
+                qr_pedido_fecha = "update pedido set fecha= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese la nueva 'fecha' (yyyy,mm,dd): ") 
+                pedido_data1=input("Ingrese 'id' del pedido a modificar: ") 
+                pedido_data_lst_fecha_update.append(pedido_data0) 
+                pedido_data_lst_fecha_update.append(pedido_data1) 
+                cursor.execute(qr_pedido_fecha, pedido_data_lst_fecha_update)
+                mydb.commit()            
+            if columna_pedido== "id_cliente":
+                print()
+                print()
+                print("DATOS DE LA TABLA 'cliente' (id, nombre, apellido1, apeliido2, ciudad, categoría): ")
+                print()
+                qr_show_cliente = "select * from cliente"
+                cursor.execute(qr_show_cliente)
+                level=3
+                print(" " * level, cursor.fetchall())
+                pedido_data_lst_idcliente_update=[] 
+                qr_pedido_idcliente = "update pedido set id_cliente= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese el nuevo 'id_cliente': ") 
+                pedido_data1=input("Ingrese 'id' del pedido a modificar: ") 
+                pedido_data_lst_idcliente_update.append(pedido_data0) 
+                pedido_data_lst_idcliente_update.append(pedido_data1) 
+                cursor.execute(qr_pedido_idcliente, pedido_data_lst_idcliente_update)
+                mydb.commit()
+            if columna_pedido== "id_comercial":
+                print("DATOS DE LA TABLA 'comercial' (id, nombre, apellido1, apeliido2, comisión): ")
+                print()
+                qr_show_comercial = "select * from comercial"
+                cursor.execute(qr_show_comercial)
+                level=3
+                print(" " * level, cursor.fetchall())
+                pedido_data_lst_idcomercial_update=[] 
+                qr_pedido_idcomercial = "update pedido set id_comercial= %s WHERE id= %s"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese el nuevo 'id_comercial': ") 
+                pedido_data1=input("Ingrese 'id' del pedido a modificar: ") 
+                pedido_data_lst_ciudad_update.append(comercial_data0) 
+                pedido_data_lst_ciudad_update.append(comercial_data1) 
+                cursor.execute(qr_pedido_idcomercial, pedido_data_lst_idcomercial_update)
+                mydb.commit()
+if CRUD=="D":
+    tabla = input("¿De qué tabla quiere eleminar datos? (teclee: cliente / comercial / pedido) ")
+    if tabla=="cliente":
+            print()
+            print()
+            print("DATOS DE LA TABLA 'cliente' (id, nombre, apellido1, apeliido2, ciudad, categoría): ")
+            print()
+            qr_show_cliente = "select * from cliente"
+            cursor.execute(qr_show_cliente)
+            level=3
+            print(" " * level, cursor.fetchall())
+            columna_cliente = input("¿De qué columna quiere eliminar datos? (teclee: nombre / apellido1 / apellido2 / ciudad / categoría) ")
+            print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+            if columna_cliente== "nombre":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                cliente_data_lst_nom_delete=[] 
+                qr_cliente_nombre_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_cliente_nombre_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_cliente_nombre_delete3 = "delete from cliente where nombre=%s"
+                qr_cliente_nombre_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_cliente_nombre_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese 'nombre': ") 
+                cliente_data_lst_nom_delete.append(cliente_data0) 
+                cursor.execute(qr_cliente_nombre_delete1)
+                cursor.execute (qr_cliente_nombre_delete2) 
+                cursor.execute (qr_cliente_nombre_delete3, cliente_data_lst_nom_delete)
+                cursor.execute (qr_cliente_nombre_delete4) 
+                cursor.execute (qr_cliente_nombre_delete5)
+                mydb.commit()
+            if columna_cliente== "apellido1":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                cliente_data_lst_ap1_delete=[] 
+                qr_cliente_ap1_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_cliente_ap1_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_cliente_ap1_delete = "delete from cliente where apellido1=%s"
+                qr_cliente_ap1_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_cliente_ap1_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese 'apellido1': ") 
+                cliente_data_lst_ap1_delete.append(cliente_data0) 
+                cursor.execute(qr_cliente_ap1_delete1)
+                cursor.execute (qr_cliente_ap1_delete2) 
+                cursor.execute (qr_cliente_ap1_delete3, cliente_data_lst_ap1_delete)
+                cursor.execute (qr_cliente_ap1_delete4) 
+                cursor.execute (qr_cliente_ap1_delete5)
+                mydb.commit()
+            if columna_cliente== "apellido2":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                cliente_data_lst_ap2_delete=[] 
+                qr_cliente_ap2_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_cliente_ap2_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_cliente_ap2_delete = "delete from cliente where apellido2=%s"
+                qr_cliente_ap2_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_cliente_ap2_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese 'apellido2': ") 
+                cliente_data_lst_ap2_delete.append(cliente_data0) 
+                cursor.execute (qr_cliente_ap2_delete1)
+                cursor.execute (qr_cliente_ap2_delete2) 
+                cursor.execute (qr_cliente_ap2_delete3, cliente_data_lst_ap2_delete)
+                cursor.execute (qr_cliente_ap2_delete4) 
+                cursor.execute (qr_cliente_ap2_delete5)
+                mydb.commit()
+            if columna_cliente== "ciudad":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                cliente_data_lst_ciudad_delete=[] 
+                qr_cliente_ciudad_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_cliente_ciudad_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_cliente_ciudad_delete3 = "delete from cliente where ciudad=%s"
+                qr_cliente_ciudad_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_cliente_ciudad_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese 'ciudad': ") 
+                cliente_data_lst_ciudad_delete.append(cliente_data0) 
+                cursor.execute (qr_cliente_ciudad_delete1)
+                cursor.execute (qr_cliente_ciudad_delete2) 
+                cursor.execute (qr_cliente_ciudad_delete3, cliente_data_lst_ciudad_delete)
+                cursor.execute (qr_cliente_ciudad_delete4) 
+                cursor.execute (qr_cliente_ciudad_delete5)
+                mydb.commit()
+            if columna_cliente == "categoría":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                cliente_data_lst_categoria_delete=[] 
+                qr_cliente_categoria_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_cliente_categoria_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_cliente_categoria_delete = "delete from cliente where categoría=%s"
+                qr_cliente_categoria_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_cliente_categoria_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL CLIENTE: ") 
+                cliente_data0=input("Ingrese la 'categoria': ") 
+                cliente_data_lst_categoria_delete.append(cliente_data0) 
+                cursor.execute (qr_cliente_categoria_delete1)
+                cursor.execute (qr_cliente_categoria_delete2) 
+                cursor.execute (qr_cliente_categoria_delete3, cliente_data_lst_categoria_delete)
+                cursor.execute (qr_cliente_categoria_delete4) 
+                cursor.execute (qr_cliente_categoria_delete5)
+                mydb.commit()
+    if tabla=="comercial":
+            print()
+            print()
+            print("DATOS DE LA TABLA 'comercial' (id, nombre, apellido1, apeliido2, comisión): ")
+            print()
+            qr_show_comercial = "select * from comercial"
+            cursor.execute(qr_show_comercial)
+            level=3
+            print(" " * level, cursor.fetchall())
+            columna_comercial = input("¿De qué columna quiere eliminar datos? (teclee: nombre / apellido1 / apellido2 / comisión) ")
+            if columna_comercial== "nombre":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                comercial_data_lst_nom_delete=[] 
+                qr_comercial_nombre_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_comercial_nombre_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_comercial_nombre_delete3 = "delete from comercial where nombre=%s"
+                qr_comercial_nombre_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_comercial_nombre_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese el 'nombre': ") 
+                comercial_data_lst_nom_delete.append(comercial_data0) 
+                cursor.execute (qr_comercial_nombre_delete1)
+                cursor.execute (qr_comercial_nombre_delete2) 
+                cursor.execute (qr_comercial_nombre_delete3, comercial_data_lst_nom_delete)
+                cursor.execute (qr_comercial_nombre_delete4) 
+                cursor.execute (qr_comercial_nombre_delete5)
+                mydb.commit()
+            if columna_comercial== "apellido1":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                comercial_data_lst_ap1_delete=[] 
+                qr_comercial_ap1_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_comercial_ap1_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_comercial_ap1_delete3 = "delete from comercial where apellido1=%s"
+                qr_comercial_ap1_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_comercial_ap1_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese el 'apellido1': ") 
+                comercial_data_lst_ap1_delete.append(comercial_data0) 
+                cursor.execute (qr_comercial_ap1_delete1)
+                cursor.execute (qr_comercial_ap1_delete2) 
+                cursor.execute (qr_comercial_ap1_delete3, comercial_data_lst_ap1_delete)
+                cursor.execute (qr_comercial_ap1_delete4) 
+                cursor.execute (qr_comercial_ap1_delete5)
+                mydb.commit()
+            if columna_comercial== "apellido2":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                comercial_data_lst_ap2_delete=[] 
+                qr_comercial_ap2_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_comercial_ap2_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_comercial_ap2_delete3 = "delete from comercial where apellido2=%s"
+                qr_comercial_ap2_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_comercial_ap2_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese el 'apellido2': ") 
+                comercial_data_lst_ap2_delete.append(comercial_data0) 
+                cursor.execute (qr_comercial_ap2_delete1)
+                cursor.execute (qr_comercial_ap2_delete2) 
+                cursor.execute (qr_comercial_ap2_delete3, comercial_data_lst_ap2_delete)
+                cursor.execute (qr_comercial_ap2_delete4) 
+                cursor.execute (qr_comercial_ap2_delete5)
+                mydb.commit()
+            if columna_comercial== "comisión":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                comercial_data_lst_ciudad_delete=[] 
+                qr_comercial_ciudad_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_comercial_ciudad_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_comercial_ciudad_delete3 = "delete from comercial where comisión=%s"
+                qr_comercial_ciudad_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_comercial_ciudad_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL COMERCIAL: ") 
+                comercial_data0=input("Ingrese la 'comisión': ") 
+                comercial_data_lst_ciudad_delete.append(comercial_data0) 
+                cursor.execute (qr_comercial_ciudad_delete1)
+                cursor.execute (qr_comercial_ciudd_delete2) 
+                cursor.execute (qr_comercial_ciudad_delete3, comercial_data_lst_ciudad_delete)
+                cursor.execute (qr_comercial_ciudad_delete4) 
+                cursor.execute (qr_comercial_ciudad_delete5)
+                mydb.commit()
+    if tabla=="pedido":
+            print()
+            print()
+            print("DATOS DE LA TABLA 'pedido' (id, total, fecha, id_cliente, id_comercial): ")
+            print()
+            qr_show_pedido = "select * from pedido"
+            cursor.execute(qr_show_pedido)
+            level=3
+            print(" " * level, cursor.fetchall())
+            columna_pedido = input("¿De qué columna quiere eliminar datos? (teclee: total / fecha / id_cliente / id_comercial) ")
+            if columna_pedido== "total":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                pedido_data_lst_total_delete=[] 
+                qr_pedido_total_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_pedido_total_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_pedido_total_delete3 = "delete from pedido where total=%s"
+                qr_pedido_total_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_pedido_total_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese el 'total': ") 
+                pedido_data_lst_total_delete.append(pedido_data0) 
+                cursor.execute (qr_pedido_total_delete1)
+                cursor.execute (qr_pedido_total_delete2) 
+                cursor.execute (qr_pedido_total_delete3, pedido_data_lst_total_delete)
+                cursor.execute (qr_pedido_total_delete4) 
+                cursor.execute (qr_pedido_total_delete5)
+                mydb.commit()
+            if columna_pedido== "fecha":
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                pedido_data_lst_fecha_delete=[] 
+                qr_pedido_fecha_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_pedido_fecha_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_pedido_fecha_delete3 = "delete from pedido where fecha=%s"
+                qr_pedido_fecha_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_pedido_fecha_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese la 'fecha' (yyyy,mm,dd): ") 
+                pedido_data_lst_fecha_delete.append(pedido_data0) 
+                cursor.execute (qr_pedido_fecha_delete1)
+                cursor.execute (qr_pedido_fecha_delete2) 
+                cursor.execute (qr_pedido_fecha_delete3, pedido_data_lst_fecha_delete)
+                cursor.execute (qr_pedido_fecha_delete4) 
+                cursor.execute (qr_pedido_fecha_delete5)
+                mydb.commit()
+            if columna_pedido== "id_cliente":
+                print()
+                print()
+                print("DATOS DE LA TABLA 'cliente' (id, nombre, apellido1, apeliido2, ciudad, categoría): ")
+                print()
+                qr_show_cliente = "select * from cliente"
+                cursor.execute(qr_show_cliente)
+                level=3
+                print(" " * level, cursor.fetchall())
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                pedido_data_lst_idcliente_delete=[] 
+                qr_pedido_idcliente_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_pedido_idcliente_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_pedido_idcliente_delete3 = "delete from pedido where id_cliente=%s"
+                qr_pedido_idcliente_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_pedido_idcliente_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese el 'id_cliente': ") 
+                pedido_data_lst_idcliente_delete.append(pedido_data0) 
+                cursor.execute (qr_pedido_idcliente_delete1)
+                cursor.execute (qr_pedido_idcliente_delete2) 
+                cursor.execute (qr_pedido_idcliente_delete3, pedido_data_lst_idcliente_delete)
+                cursor.execute (qr_pedido_idcliente_delete4) 
+                cursor.execute (qr_pedido_idcliente_delete5)
+                mydb.commit()
+            if columna_pedido== "id_comercial":
+                print("DATOS DE LA TABLA 'comercial' (id, nombre, apellido1, apeliido2, comisión): ")
+                print()
+                qr_show_comercial = "select * from comercial"
+                cursor.execute(qr_show_comercial)
+                level=3
+                print(" " * level, cursor.fetchall())
+                print ("¡ATENCIÓN! se eliminarán todas la filas que contengan el valor que usted introduzca")
+                pedido_data_lst_idcomercial_delete=[] 
+                qr_pedido_idcomercial_delete1 = "SET SQL_SAFE_UPDATES = 0"
+                qr_pedido_idcomercial_delete2 = "SET FOREIGN_KEY_CHECKS=0"
+                qr_pedido_idcomercial_delete3 = "delete from pedido where id_comercial=%s"
+                qr_pedido_idcomercial_delete4 = "SET FOREIGN_KEY_CHECKS=1"
+                qr_pedido_idcomercial_delete5 = "SET SQL_SAFE_UPDATES = 1"
+                print() 
+                print("DATOS DEL PEDIDO: ") 
+                pedido_data0=input("Ingrese el 'id_comercial': ") 
+                pedido_data_lst_ciudad_delete.append(comercial_data0) 
+                cursor.execute (qr_pedido_idcomercial_delete1)
+                cursor.execute (qr_pedido_idcomercial_delete2) 
+                cursor.execute (qr_pedido_idcomercial_delete3, pedido_data_lst_idcomercial_delete)
+                cursor.execute (qr_pedido_idcomercial_delete4) 
+                cursor.execute (qr_pedido_idcomercial_delete5)
+                mydb.commit()
