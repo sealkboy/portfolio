@@ -21,6 +21,170 @@ tabla_ventas_sql = mycursor.fetchall()
 docu_tabla_ventas_sql = []
 for x in range (len(tabla_ventas_sql)):
     docu_tabla_ventas_sql.append(dict(zip(nom_tabla_ventas_sql, tabla_ventas_sql[x])))
-
 print (docu_tabla_ventas_sql)
 
+#Conexión a pymongo
+!pip install pymongo
+from pymongo import MongoClient
+
+#Inserta los datos de la tabla de MYSQL a colección de MongoDB
+
+client = MongoClient('localhost')
+db = client['db0']
+col= db['tarea1']
+col_sql = col.insert_many(docu_tabla_ventas_sql)
+for x in col.find():
+    print (x)
+    
+#Ejecutar los siguientes comandos: insertone
+
+class bold_color:
+    BLUE = '\033[94m'
+    BOLD = '\033[1m'
+print ()
+print ("COLECCIÓN DE REFERENCIA: ")
+print ("{'_id': ObjectId('634efad642d5510c81c48dd9'), 'id': 1, 'nombre': 'Aarón', 'apellido1': 'Rivero', 'apellido2': 'Gómez', 'ciudad': 'Almería', 'categoria': 100}")
+print()
+num = int(input("¿Cuántos campos desea agregar? "))
+t1_lst = []
+t2_lst = []
+tt_lst = []
+for k in range (num):
+    t1 = input("Ingrese el " + bold_color.BOLD + "nombre" + bold_color.BOLD + " del campo: ")
+    t1_lst.append(t1)
+    t2 = input ("Ingrese el " + bold_color.BOLD + "valor" + bold_color.BOLD + " del campo: ")
+    t2_lst.append(t2)
+t1_lst_tuple = tuple(t1_lst)
+t2_lst_tuple = tuple(t2_lst)
+tt_lst.append(dict(zip(t1_lst_tuple, t2_lst_tuple)))
+print (tt_lst)
+col_sql = col.insert_one(tt_lst)
+
+print ()
+print ("COLECCIÓN ACTUALIZADA: ")
+for x in col.find():
+    print (x)
+print()
+
+#Ejecutar los siguientes comandos: insertmany
+
+class bold_color:
+    BLUE = '\033[94m'
+    BOLD = '\033[1m'
+
+print ()
+print ("DOCUMENTO DE REFERENCIA: ")
+print ("{'_id': ObjectId('634efad642d5510c81c48dd9'), 'id': 1, 'nombre': 'Aarón', 'apellido1': 'Rivero', 'apellido2': 'Gómez', 'ciudad': 'Almería', 'categoria': 100}")
+print ()
+
+num_docu = int(input("¿Cuántos documentos desea agregar? "))
+num_campos = int(input("¿Cuántos campos desea agregar? "))
+print()
+
+
+
+campos_lst = []
+for j in range (num_campos):
+    campos = input(">>>Introduza el campo nº" + str(j+1) +": ")
+    campos_lst.append(campos)
+campos_lst_tuple = tuple(campos_lst)
+print()
+
+
+
+lista_val = []
+for j in range (num_docu):
+    print ("VALORES DEL DOCUMENTO Nº" + str(j+1) + ": ")
+    for k in range (num_campos):
+        v = input ("Ingrese el " + bold_color.BOLD + "valor" + bold_color.BOLD + " del campo " + "nº" + str(k+1) + ": ")
+        lista_val.append(v)
+    print ()
+lista_val_tuple = tuple(lista_val)
+    
+
+
+big_lista_val = []
+dic =[]
+if num_docu>num_campos:
+    for i in range (num_docu):
+        big_lista_val.append(tuple(lista_val[i*num_campos:i*num_campos+num_campos]))
+    for h in range (num_docu):
+        dic.append(dict(zip(campos_lst_tuple, big_lista_val[h])))
+    print (big_lista_val)
+    print (dic)
+    col_sql = col.insert_many(dic)
+else:
+    for i in range (num_campos):
+        big_lista_val.append(tuple(lista_val[i*num_campos:i*num_campos+num_campos]))
+    for h in range (num_campos):
+        dic.append(dict(zip(campos_lst_tuple, big_lista_val[h])))
+    print (dic)
+    col_sql = col.insert_many(dic)
+    
+print ()
+print ("COLECCIÓN ACTUALIZADA: ")
+for x in col.find():
+    print (x)
+print()
+
+#Ejecutar los siguientes comandos: find -> sobre un campo
+
+print()
+print (">>>SIN 'id':")
+for x in col.find({},{"id":0}):
+    print(x)
+print()
+print (">>>SÓLO 'id':")
+for x in col.find({},{"id":1}):
+    print(x)
+    
+#Ejecutar los siguientes comandos: find -> sobre varios campos
+
+for x in col.find({},{"_id":1, "nombre":1}):
+    print(x)
+    
+ #Ejecutar los siguientes comandos: remove -> delete one
+
+for x in range (9):
+    myquery = {"id": x}
+    col.delete_one(myquery)
+
+print()
+print ("COLECCIÓN ACTUALIZADA: ")
+for x in col.find():
+    print (x)
+print()
+
+#Ejecutar los siguientes comandos: remove -> delete many
+
+x = col.delete_many({})
+print(x.deleted_count, " documentos eliminados.")
+
+#Ejecutar los siguientes comandos: remove -> drop
+
+col.drop()
+
+#Mostrar todos los datos de uno de los campos, ordenados de mayor a menor
+#Seleccionar únicamente el "id", y luego ordenarlo de mayor a menor.
+
+doc = col.find().sort("nombre", -1)
+for x in doc:
+  print(x)
+  
+#Mostrar la media de todos los valores de uno de los campos numéricos
+
+for x in col.aggregate([{'$group':{'_id':"avg", "avgCategoria": {'$avg': "$categoria"}}}]):
+    print (x)
+    
+ #Mostrar todos los elementos diferentes de cada una de las columnas
+
+mydoc = col.find()
+for x in mydoc:
+    l=list(x.keys())
+    
+for x in range (len(l)):
+    print()
+    print (">>>" + str(l[x]) + ": ")
+    for y in col.distinct(l[x]):
+        print (y)
+    print()  
