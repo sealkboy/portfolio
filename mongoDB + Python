@@ -1,0 +1,26 @@
+#Conexión a mysql
+
+!pip install mysql-connector-python
+import mysql.connector
+
+#Extraer los datos de una tabla mysql
+
+mydb = mysql.connector.connect(
+host="localhost",
+user="root",
+passwd="---",
+    database='ventas'
+)
+mycursor = mydb.cursor()
+
+qr1="select * from cliente"
+mycursor.execute(qr1)
+print (" - VALORES DE LA TABLA 'cliente': ")
+nom_tabla_ventas_sql = ("id", "nombre", "apellido1", "apellido2", "ciudad", "categoria")
+tabla_ventas_sql = mycursor.fetchall()
+docu_tabla_ventas_sql = []
+for x in range (len(tabla_ventas_sql)):
+    docu_tabla_ventas_sql.append(dict(zip(nom_tabla_ventas_sql, tabla_ventas_sql[x])))
+
+print (docu_tabla_ventas_sql)
+
